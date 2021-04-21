@@ -10,6 +10,8 @@ eventlet.monkey_patch(
 from st2reactor.sensor.base import Sensor
 import paho.mqtt.client as mqtt
 
+import paho.mqtt.client as paho
+
 
 class MQTTSensor(Sensor):
     def __init__(self, sensor_service, config=None):
@@ -22,7 +24,8 @@ class MQTTSensor(Sensor):
         self._client = None
         self._hostname = self._config.get('hostname', None)
         self._port = self._config.get('port', 1883)
-        self._protocol = self._config.get('protocol', 'MQTTv311')
+        # self._protocol = self._config.get('protocol', 'MQTTv311')
+        self._protocol = self._config.get('protocol', paho.MQTTv311)
         self._client_id = self._config.get('client_id', None)
         self._userdata = self._config.get('userdata', None)
         self._username = self._config.get('username', None)
