@@ -1,7 +1,7 @@
 ### Place information about your pack version here.
 ---
-ref: mqtt
-name: mqtt
+ref: tattva
+name: tattva
 description: MQTT Integration for StackStorm
 version: 1.0.0
 author: James Fryman
