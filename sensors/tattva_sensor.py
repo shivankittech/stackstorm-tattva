@@ -18,7 +18,7 @@ class TattvaSensor(Sensor):
         super(TattvaSensor, self).__init__(sensor_service=sensor_service,
                                          config=config)
 
-        self._trigger = 'mqtt.message'
+        self._trigger = 'tattva.message'
         self._logger = self._sensor_service.get_logger(__name__)
 
         self._client = None
