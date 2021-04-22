@@ -80,9 +80,9 @@ class TattvaSensor(Sensor):
 
     def add_trigger(self, trigger):
         print(trigger)
-        trigger = trigger.get("ref", None)
-        newTopic = trigger["parameters"].get("topicName", None) #new 
-        self._topicTriggers[newTopic] = trigger
+        triggerRef = trigger.get("ref", None)
+        newTopic = trigger["parameters"].get("topicName", None) 
+        self._topicTriggers[newTopic] = triggerRef
 
     def update_trigger(self, trigger):
         print(trigger)
