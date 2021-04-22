@@ -13,9 +13,9 @@ import paho.mqtt.client as mqtt
 import paho.mqtt.client as paho
 
 
-class tattvaSensor(Sensor):
+class TattvaSensor(Sensor):
     def __init__(self, sensor_service, config=None):
-        super(tattvaSensor, self).__init__(sensor_service=sensor_service,
+        super(TattvaSensor, self).__init__(sensor_service=sensor_service,
                                          config=config)
 
         self._trigger = 'mqtt.message'

@@ -1,5 +1,5 @@
 ---
-  class_name: "tattvaSensor"
+  class_name: "TattvaSensor"
   entry_point: "mqtt_sensor.py"
   description: "Listen for events on MQTT bus/topic and parse data"
   trigger_types:
