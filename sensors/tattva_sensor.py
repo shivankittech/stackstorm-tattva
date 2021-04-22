@@ -78,6 +78,7 @@ class TattvaSensor(Sensor):
 
     def add_trigger(self, trigger):
         print(trigger)
+        self._trigger = trigger.get("ref", None)
         self._newTopic = trigger["parameters"].get("topicName", None) #new 
 
     def update_trigger(self, trigger):
