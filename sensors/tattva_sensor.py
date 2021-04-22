@@ -77,28 +77,32 @@ class TattvaSensor(Sensor):
         self._client.disconnect()
 
     def add_trigger(self, trigger):
+        print(trigger)
         self._newTopic = trigger["parameters"].get("topicName", None) #new 
 
     def update_trigger(self, trigger):
+        print(trigger)
         pass
 
     def remove_trigger(self, trigger):
+        print(trigger)
         pass
 
     def _on_connect(self, client, userdata, flags, rc):
         self._logger.debug('[TattvaSensor]: Connected with code {}' + str(rc))
         if self._newTopic != None:
-            for topic in self._newTopic:
-                self._logger.debug('[TattvaSensor]: Sub to ' + str(topic))
-                self._client.subscribe(topic)
+#            for topic in self._newTopic:
+            topic = self._newTopic
+            self._logger.debug('[TattvaSensor]: Sub to ' + str(topic))
+            self._client.subscribe(topic)
 
     def _on_message(self, client, userdata, msg):
+        message = msg.payload.decode("utf-8")
         payload = {
             'userdata': userdata,
             'topic': msg.topic,
-            'message': str(msg.payload),
+            'message': str(message),
             'retain': msg.retain,
             'qos': msg.qos,
-            'newTopic' : self._newTopic #new
         }
         self._sensor_service.dispatch(trigger=self._trigger, payload=payload)
