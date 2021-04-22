@@ -6,6 +6,13 @@
     -
       name: "message"
       description: "Tattva message payload"
+      parameters_schema:
+        type: "object"
+        properties:
+          connectionTopic:
+            description: "topic to subscribe to"
+            type: "string"
+            required: true
       payload_info:
         - userdata
         - message
