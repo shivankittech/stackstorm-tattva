@@ -4,7 +4,7 @@ ref: tattva
 name: tattva
 description: Tattva Integration for StackStorm
 version: 1.0.0
-author: James Fryman
+author: shivankittech
 email: james@stackstorm.com
 python_versions:
   - "3"
