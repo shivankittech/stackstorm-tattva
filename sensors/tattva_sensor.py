@@ -20,6 +20,7 @@ class TattvaSensor(Sensor):
                                          config=config)
         
         self._topicTriggers = {}
+        self.isMqttConnected = False
         
         self._logger = self._sensor_service.get_logger(__name__)
 
@@ -79,23 +80,37 @@ class TattvaSensor(Sensor):
         self._client.disconnect()
 
     def add_trigger(self, trigger):
-        print(trigger)
         triggerRef = trigger.get("ref", None)
-        newTopic = trigger["parameters"].get("topicName", None) 
-        self._topicTriggers[newTopic] = triggerRef
+        topic = trigger["parameters"].get("topicName", None)
+        self._topicTriggers[topic] = triggerRef
+
+        if self.isMqttConnected:
+            self._client.subscribe(topic)
 
     def update_trigger(self, trigger):
-        print(trigger)
+        self._logger.debug('[TattvaSensor]: Trigger Details {}' + trigger)
+#         triggerRef = trigger.get("ref", None)
+#         topic = trigger["parameters"].get("topicName", None)
+#         self._topicTriggers[topic] = triggerRef
+
+#         if self.isMqttConnected:
+#             self._client.subscribe(topic)
         pass
 
     def remove_trigger(self, trigger):
-        print(trigger)
+        triggerRef = trigger.get("ref", None)
+        topic = trigger["parameters"].get("topicName", None)
+
+        del self._topicTriggers[topic]
+
+        if self.isMqttConnected:
+            self._client.unsubscribe(topic)
         pass
 
     def _on_connect(self, client, userdata, flags, rc):
         self._logger.debug('[TattvaSensor]: Connected with code {}' + str(rc))
-        for key in self._topicTriggers:
-            topic = key
+        self.isMqttConnected = True
+        for topic in self._topicTriggers:
             self._logger.debug('[TattvaSensor]: Sub to ' + str(topic))
             self._client.subscribe(topic)
 
