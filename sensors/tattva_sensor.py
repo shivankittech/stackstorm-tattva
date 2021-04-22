@@ -17,7 +17,7 @@ class TattvaSensor(Sensor):
     def __init__(self, sensor_service, config=None):
         super(TattvaSensor, self).__init__(sensor_service=sensor_service,
                                          config=config)
-
+        self._newTopic = None                       #new
         self._trigger = 'tattva.message'
         self._logger = self._sensor_service.get_logger(__name__)
 
@@ -37,7 +37,7 @@ class TattvaSensor(Sensor):
         self._ssl_key = self._config.get('ssl_key', None)
 
     def setup(self):
-        self._logger.debug('[MQTTSensor]: setting up sensor...')
+        self._logger.debug('[TattvaSensor]: setting up sensor...')
 
         self._client = mqtt.Client(self._client_id, clean_session=True,
                              userdata=self._userdata, protocol=self._protocol)
@@ -47,15 +47,15 @@ class TattvaSensor(Sensor):
 
         if self._ssl:
             if not self._ssl_cacert:
-                raise ValueError('[mqtt_sensor]: Missing "ssl_cacert" \
+                raise ValueError('[TattvaSensor]: Missing "ssl_cacert" \
                                     config option')
 
             if not self._ssl_cert:
-                raise ValueError('[mqtt_sensor]: Missing "ssl_cert" \
+                raise ValueError('[TattvaSensor]: Missing "ssl_cert" \
                                     config option')
 
             if not self._ssl_key:
-                raise ValueError('[mqtt_sensor]: Missing "ssl_key" \
+                raise ValueError('[TattvaSensor]: Missing "ssl_key" \
                                     config option')
 
             self._client.tls_set(self._ssl_cacert, certfile=self._ssl_cert,
@@ -69,15 +69,15 @@ class TattvaSensor(Sensor):
         self._client.connect(self._hostname, port=self._port)
 
     def run(self):
-        self._logger.debug('[MQTTSensor]: entering runloop')
+        self._logger.debug('[TattvaSensor]: entering runloop')
         self._client.loop_forever()
 
     def cleanup(self):
-        self._logger.debug('[MQTTSensor]: entering cleanup')
+        self._logger.debug('[TattvaSensor]: entering cleanup')
         self._client.disconnect()
 
     def add_trigger(self, trigger):
-        pass
+        self._newTopic = trigger["parameters"].get("topicName", None) #new 
 
     def update_trigger(self, trigger):
         pass
@@ -86,10 +86,10 @@ class TattvaSensor(Sensor):
         pass
 
     def _on_connect(self, client, userdata, flags, rc):
-        self._logger.debug('[MQTTSensor]: Connected with code {}' + str(rc))
-        if self._subscribe:
-            for topic in self._subscribe:
-                self._logger.debug('[MQTTSensor]: Sub to ' + str(topic))
+        self._logger.debug('[TattvaSensor]: Connected with code {}' + str(rc))
+        if self._newTopic != None:
+            for topic in self._newTopic:
+                self._logger.debug('[TattvaSensor]: Sub to ' + str(topic))
                 self._client.subscribe(topic)
 
     def _on_message(self, client, userdata, msg):
@@ -99,5 +99,6 @@ class TattvaSensor(Sensor):
             'message': str(msg.payload),
             'retain': msg.retain,
             'qos': msg.qos,
+            'newTopic' : self._newTopic #new
         }
         self._sensor_service.dispatch(trigger=self._trigger, payload=payload)

@@ -9,10 +9,11 @@
       parameters_schema:
         type: "object"
         properties:
-          connectionTopic:
+          topicName:
             description: "topic to subscribe to"
             type: "string"
             required: true
+        additionalProperties: false
       payload_info:
         - userdata
         - message
