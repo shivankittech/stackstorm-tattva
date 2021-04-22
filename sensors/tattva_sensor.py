@@ -14,11 +14,13 @@ import paho.mqtt.client as paho
 
 
 class TattvaSensor(Sensor):
+    
     def __init__(self, sensor_service, config=None):
         super(TattvaSensor, self).__init__(sensor_service=sensor_service,
                                          config=config)
-        self._newTopic = None                       #new
-        self._trigger = 'tattva.message'
+        
+        self._topicTriggers = {}
+        
         self._logger = self._sensor_service.get_logger(__name__)
 
         self._client = None
@@ -78,8 +80,9 @@ class TattvaSensor(Sensor):
 
     def add_trigger(self, trigger):
         print(trigger)
-        self._trigger = trigger.get("ref", None)
-        self._newTopic = trigger["parameters"].get("topicName", None) #new 
+        trigger = trigger.get("ref", None)
+        newTopic = trigger["parameters"].get("topicName", None) #new 
+        self._topicTriggers[newTopic] = trigger
 
     def update_trigger(self, trigger):
         print(trigger)
@@ -91,9 +94,8 @@ class TattvaSensor(Sensor):
 
     def _on_connect(self, client, userdata, flags, rc):
         self._logger.debug('[TattvaSensor]: Connected with code {}' + str(rc))
-        if self._newTopic != None:
-#            for topic in self._newTopic:
-            topic = self._newTopic
+        for key in self._topicTriggers:
+            topic = key
             self._logger.debug('[TattvaSensor]: Sub to ' + str(topic))
             self._client.subscribe(topic)
 
@@ -106,4 +108,4 @@ class TattvaSensor(Sensor):
             'retain': msg.retain,
             'qos': msg.qos,
         }
-        self._sensor_service.dispatch(trigger=self._trigger, payload=payload)
+        self._sensor_service.dispatch(trigger=self._topicTriggers[msg.topic], payload=payload)
