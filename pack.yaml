@@ -1,6 +1,6 @@
 ### Place information about your pack version here.
 ---
-ref: mqtt
+ref: tattva
 name: tattva
 description: Tattva Integration for StackStorm
 version: 1.0.0
