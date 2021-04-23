@@ -13,6 +13,10 @@
             description: "topic to subscribe to"
             type: "string"
             required: true
+          deviceId:
+            description: "Id of the device"
+            type: "string"
+            required: true
         additionalProperties: false
       payload_info:
         - userdata

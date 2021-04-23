@@ -18,7 +18,7 @@ class TattvaSensor(Sensor):
     def __init__(self, sensor_service, config=None):
         super(TattvaSensor, self).__init__(sensor_service=sensor_service,
                                          config=config)
-        
+        self._deviceId = None
         self._topicTriggers = {}
         self.isMqttConnected = False
         
@@ -80,6 +80,8 @@ class TattvaSensor(Sensor):
         self._client.disconnect()
 
     def add_trigger(self, trigger):
+        self._deviceId = trigger["parameters"].get("deviceId", None)
+        
         triggerRef = trigger.get("ref", None)
         topic = trigger["parameters"].get("topicName", None)
         self._topicTriggers[topic] = triggerRef
@@ -116,11 +118,16 @@ class TattvaSensor(Sensor):
 
     def _on_message(self, client, userdata, msg):
         message = msg.payload.decode("utf-8")
-        payload = {
-            'userdata': userdata,
-            'topic': msg.topic,
-            'message': str(message),
-            'retain': msg.retain,
-            'qos': msg.qos,
-        }
-        self._sensor_service.dispatch(trigger=self._topicTriggers[msg.topic], payload=payload)
+        
+        deviceIdByClient = self._client_id.split(":")[1]
+        if self._deviceId == deviceIdByClient:
+            payload = {
+                'userdata': userdata,
+                'topic': msg.topic,
+                'message': str(message),
+                'retain': msg.retain,
+                'qos': msg.qos,
+            }
+            self._sensor_service.dispatch(trigger=self._topicTriggers[msg.topic], payload=payload)
+        else:
+            self._logger.debug('[TattvaSensor]: device id by mqtt and parameter are not equal')
