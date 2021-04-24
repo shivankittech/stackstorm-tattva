@@ -128,9 +128,9 @@ class TattvaSensor(Sensor):
         messageDict = ast.literal_eval(message)
 
         if self._deviceIdentity:
-            if messageDict.deviceId:
+            if messageDict["deviceId"]:
                 for deviceIdentity in self._deviceId:
-                    if deviceIdentity == messageDict.deviceId:
+                    if deviceIdentity == messageDict["deviceId"]:
                         payload = {
                             'userdata': userdata,
                             'topic': msg.topic,
