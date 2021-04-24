@@ -19,6 +19,7 @@ class TattvaSensor(Sensor):
         super(TattvaSensor, self).__init__(sensor_service=sensor_service,
                                          config=config)
         self._deviceId = {}
+        self._deviceIdentity = None
         self._topicTriggers = {}
         self.isMqttConnected = False
         
@@ -83,11 +84,11 @@ class TattvaSensor(Sensor):
         
         triggerRef = trigger.get("ref", None)
         topic = trigger["parameters"].get("topicName", None)
-        deviceIdentity = trigger["parameters"].get("deviceId", None)
+        self._deviceIdentity = trigger["parameters"].get("deviceId", None)
 
-        if deviceIdentity:
-            self._deviceId[deviceIdentity] = topic
-            
+        if self._deviceIdentity:
+            self._deviceId[self._deviceIdentity] = topic
+
         self._topicTriggers[topic] = triggerRef
 
         if self.isMqttConnected:
@@ -123,7 +124,7 @@ class TattvaSensor(Sensor):
     def _on_message(self, client, userdata, msg):
         message = msg.payload.decode("utf-8")
 
-        if self._deviceId:
+        if self._deviceIdentity:
             if message.deviceId:
                 for deviceIdentity in self._deviceId:
                     if deviceIdentity == message.deviceId:
