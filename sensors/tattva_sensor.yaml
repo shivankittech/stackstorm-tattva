@@ -16,7 +16,7 @@
           deviceId:
             description: "Id of the device"
             type: "string"
-            required: true
+            required: false
         additionalProperties: false
       payload_info:
         - userdata
