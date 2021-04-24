@@ -1,4 +1,5 @@
 import eventlet
+import ast
 
 eventlet.monkey_patch(
     os=True,
@@ -124,10 +125,12 @@ class TattvaSensor(Sensor):
     def _on_message(self, client, userdata, msg):
         message = msg.payload.decode("utf-8")
 
+        messageDict = ast.literal_eval(message)
+
         if self._deviceIdentity:
-            if msg.payload.deviceId:
+            if messageDict.deviceId:
                 for deviceIdentity in self._deviceId:
-                    if deviceIdentity == msg.payload.deviceId:
+                    if deviceIdentity == messageDict.deviceId:
                         payload = {
                             'userdata': userdata,
                             'topic': msg.topic,
