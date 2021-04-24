@@ -80,15 +80,14 @@ class TattvaSensor(Sensor):
         self._client.disconnect()
 
     def add_trigger(self, trigger):
-
-        if not self._deviceId:
-            self._logger.debug('Received trigger type without "deviceId" field.')
         
         triggerRef = trigger.get("ref", None)
         topic = trigger["parameters"].get("topicName", None)
         deviceIdentity = trigger["parameters"].get("deviceId", None)
 
-        self._deviceId[deviceIdentity] = topic
+        if deviceIdentity:
+            self._deviceId[deviceIdentity] = topic
+            
         self._topicTriggers[topic] = triggerRef
 
         if self.isMqttConnected:
