@@ -127,7 +127,7 @@ class TattvaSensor(Sensor):
         if self._deviceIdentity:
             if msg.payload.deviceId:
                 for deviceIdentity in self._deviceId:
-                    if deviceIdentity == message.deviceId:
+                    if deviceIdentity == msg.payload.deviceId:
                         payload = {
                             'userdata': userdata,
                             'topic': msg.topic,
