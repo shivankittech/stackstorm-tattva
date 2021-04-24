@@ -125,7 +125,7 @@ class TattvaSensor(Sensor):
         message = msg.payload.decode("utf-8")
 
         if self._deviceIdentity:
-            if message.deviceId:
+            if msg.payload.deviceId:
                 for deviceIdentity in self._deviceId:
                     if deviceIdentity == message.deviceId:
                         payload = {
