@@ -29,7 +29,7 @@ class PublishAction(Action):
         self._ssl_payload = None
         self._auth_payload = None
 
-    def run(self, topic, message=None, qos=0, retain=False):
+    def run(self, topic, message=None, qos=0, retain=False, deviceId=None):
         if self._username:
             self._auth_payload = {
                 'username': self._username,
@@ -51,6 +51,14 @@ class PublishAction(Action):
                 'certfile': self._ssl_cert,
                 'keyfile': self._ssl_key,
             }
+        
+        if message:
+            if deviceId:
+	            message["deviceId"] = deviceId
+            else:
+                pass
+        else:
+	        pass
 
         publish.single(topic, payload=message, qos=qos, retain=retain,
                        hostname=self._hostname, port=self._port,
