@@ -53,6 +53,8 @@ class PublishAction(Action):
                 'keyfile': self._ssl_key,
             }
         
+        messageDict = {}
+
         if message:
             messageDict = json.loads(message)
             if deviceId:
