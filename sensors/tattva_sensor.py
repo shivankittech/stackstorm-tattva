@@ -1,5 +1,6 @@
 import eventlet
-import ast
+# import ast
+import json
 
 eventlet.monkey_patch(
     os=True,
@@ -125,10 +126,12 @@ class TattvaSensor(Sensor):
     def _on_message(self, client, userdata, msg):
         message = msg.payload.decode("utf-8")
 
-        messageDict = ast.literal_eval(message)
+        messageDict = json.loads(message)
+
+        deviceId = messageDict.get("deviceId", None)
 
         if self._deviceIdentity:
-            if messageDict["deviceId"]:
+            if deviceId:
                 for deviceIdentity in self._deviceId:
                     if deviceIdentity == messageDict["deviceId"]:
                         payload = {
@@ -141,6 +144,8 @@ class TattvaSensor(Sensor):
                         self._sensor_service.dispatch(trigger=self._topicTriggers[msg.topic], payload=payload)
                     else:
                         self._logger.debug('[TattvaSensor]: device id by mqtt and parameter are not equal')
+                else:
+                    pass
         else:
             payload = {
                     'userdata': userdata,

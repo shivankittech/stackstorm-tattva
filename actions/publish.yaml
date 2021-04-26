@@ -1,5 +1,5 @@
 ---
-name: "tattvaPublish"
+name: "tattvaSend"
 runner_type: "python-script"
 description: "Publish message to MQTT broker"
 enabled: true
@@ -12,6 +12,9 @@ parameters:
   message:
     type: "string"
     description: "Message payload"
+  deviceId: 
+    type: string
+    description: "Id of the device" 
   qos:
     type: "integer"
     description: "Quality of Service to use for the message"
