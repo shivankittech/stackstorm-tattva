@@ -144,8 +144,8 @@ class TattvaSensor(Sensor):
                         self._sensor_service.dispatch(trigger=self._topicTriggers[msg.topic], payload=payload)
                     else:
                         self._logger.debug('[TattvaSensor]: device id by mqtt and parameter are not equal')
-                else:
-                    pass
+            else:
+                pass
         else:
             payload = {
                     'userdata': userdata,
