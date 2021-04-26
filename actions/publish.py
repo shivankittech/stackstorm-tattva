@@ -59,12 +59,15 @@ class PublishAction(Action):
             messageDict = json.loads(message)
             if deviceId:
 	            messageDict["deviceId"] = deviceId
-        #     else:
-        #         pass
-        # else:
-	    #     pass
 
-        publish.single(topic, payload=str(messageDict), qos=qos, retain=retain,
+        if messageDict:
+            publish.single(topic, payload=str(messageDict), qos=qos, retain=retain,
+                       hostname=self._hostname, port=self._port,
+                       client_id=self._client_id, keepalive=60,
+                       auth=self._auth_payload, tls=self._ssl_payload,
+                       protocol=self._protocol)
+        else:
+            publish.single(topic, payload=message, qos=qos, retain=retain,
                        hostname=self._hostname, port=self._port,
                        client_id=self._client_id, keepalive=60,
                        auth=self._auth_payload, tls=self._ssl_payload,
