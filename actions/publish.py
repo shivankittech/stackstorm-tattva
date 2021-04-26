@@ -1,5 +1,6 @@
 from st2common.runners.base_action import Action
 import paho.mqtt.publish as publish
+import json
 
 import paho.mqtt.client as paho
 
@@ -53,14 +54,15 @@ class PublishAction(Action):
             }
         
         if message:
+            messageDict = json.loads(message)
             if deviceId:
-	            message["deviceId"] = deviceId
-            else:
-                pass
-        else:
-	        pass
+	            messageDict["deviceId"] = deviceId
+        #     else:
+        #         pass
+        # else:
+	    #     pass
 
-        publish.single(topic, payload=message, qos=qos, retain=retain,
+        publish.single(topic, payload=str(messageDict), qos=qos, retain=retain,
                        hostname=self._hostname, port=self._port,
                        client_id=self._client_id, keepalive=60,
                        auth=self._auth_payload, tls=self._ssl_payload,
