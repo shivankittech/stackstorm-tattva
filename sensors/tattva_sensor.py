@@ -97,7 +97,7 @@ class TattvaSensor(Sensor):
             self._client.subscribe(topic)
 
     def update_trigger(self, trigger):
-        self._logger.debug('[TattvaSensor]: Trigger Details {}' + trigger)
+        self._logger.debug('[TattvaSensor]: Trigger Details {}' + str(trigger))
 #         triggerRef = trigger.get("ref", None)
 #         topic = trigger["parameters"].get("topicName", None)
 #         self._topicTriggers[topic] = triggerRef
