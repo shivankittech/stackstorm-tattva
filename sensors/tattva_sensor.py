@@ -24,7 +24,7 @@ class TattvaSensor(Sensor):
         self._deviceIdentity = None
         self._topicTriggers = {}
         self.isMqttConnected = False
-        self._count = 0
+        self._second = False
 
         self._logger = self._sensor_service.get_logger(__name__)
 
@@ -84,8 +84,8 @@ class TattvaSensor(Sensor):
         self._client.disconnect()
 
     def add_trigger(self, trigger):
-        self._count = 0
-        
+        self._second = False
+
         triggerRef = trigger.get("ref", None)
         topic = trigger["parameters"].get("topicName", None)
         self._deviceIdentity = trigger["parameters"].get("deviceId", None)
@@ -102,12 +102,12 @@ class TattvaSensor(Sensor):
         self._logger.debug('[TattvaSensor]: Trigger Details {}' + str(trigger))
         triggerRef = trigger.get("ref", None)
         
-        if self._count == 0:
+        if not self._second :
             self._logger.debug('--------------::::: It\'s in if ')
             topic = trigger["parameters"].get("topicName", None)
             self._client.subscribe(topic)
-            self._count + 1
-        elif self._count == 1:
+            self._count = True
+        elif self._second:
             self._logger.debug('-------------->>>>>>>>>>>>> It\'s in else ')
             topic = trigger["parameters"].get("topicName", None)
             del self._topicTriggers[topic]
