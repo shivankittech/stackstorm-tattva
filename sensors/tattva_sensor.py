@@ -99,32 +99,33 @@ class TattvaSensor(Sensor):
             self._client.subscribe(topic)
 
     def update_trigger(self, trigger):
-        self._logger.debug('[TattvaSensor]: Trigger Details {}' + str(trigger))
-        triggerRef = trigger.get("ref", None)
+        pass
+        # self._logger.debug('[TattvaSensor]: Trigger Details {}' + str(trigger))
+        # triggerRef = trigger.get("ref", None)
         
-        if not self._second :
-            self._logger.debug('--------------::::: It\'s in if ')
-            topic = trigger["parameters"].get("topicName", None)
-            self._client.subscribe(topic)
-            self._second = True
-        elif self._second:
-            self._logger.debug('-------------->>>>>>>>>>>>> It\'s in else ')
-            topic = trigger["parameters"].get("topicName", None)
-            del self._topicTriggers[topic]
-            self._client.unsubscribe(topic)
+        # if not self._second :
+        #     self._logger.debug('--------------::::: It\'s in if ')
+        #     topic = trigger["parameters"].get("topicName", None)
+        #     self._client.subscribe(topic)
+        #     self._second = True
+        # elif self._second:
+        #     self._logger.debug('-------------->>>>>>>>>>>>> It\'s in else ')
+        #     topic = trigger["parameters"].get("topicName", None)
+        #     # del self._topicTriggers[topic]
+        #     self._client.unsubscribe(topic)
             
-        self._deviceIdentity = trigger["parameters"].get("deviceId", None)
+        # self._deviceIdentity = trigger["parameters"].get("deviceId", None)
 
-        if self._deviceIdentity:
-            if self._deviceIdentity in self._deviceId:
-                pass
-            else:
-                try:
-                    last_deviceID = list(self._deviceId.keys())[list(self._deviceId.values()).index(topic)]
-                    del self._deviceId[last_deviceID]
-                    self._deviceId[self._deviceIdentity] = topic
-                except:
-                    self._deviceId[self._deviceIdentity] = topic
+        # if self._deviceIdentity:
+        #     if self._deviceIdentity in self._deviceId:
+        #         pass
+        #     else:
+        #         try:
+        #             last_deviceID = list(self._deviceId.keys())[list(self._deviceId.values()).index(topic)]
+        #             del self._deviceId[last_deviceID]
+        #             self._deviceId[self._deviceIdentity] = topic
+        #         except:
+        #             self._deviceId[self._deviceIdentity] = topic
 
     def remove_trigger(self, trigger):
         triggerRef = trigger.get("ref", None)
