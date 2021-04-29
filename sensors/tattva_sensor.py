@@ -25,6 +25,8 @@ class TattvaSensor(Sensor):
         self._topicTriggers = {}
         self.isMqttConnected = False
         self._second = False
+        self._newTopic = None
+        self._oldTopic = None
 
         self._logger = self._sensor_service.get_logger(__name__)
 
@@ -84,7 +86,6 @@ class TattvaSensor(Sensor):
         self._client.disconnect()
 
     def add_trigger(self, trigger):
-        self._second = False
 
         triggerRef = trigger.get("ref", None)
         topic = trigger["parameters"].get("topicName", None)
@@ -99,43 +100,37 @@ class TattvaSensor(Sensor):
             self._client.subscribe(topic)
 
     def update_trigger(self, trigger):
-        pass
-        # self._logger.debug('[TattvaSensor]: Trigger Details {}' + str(trigger))
-        # triggerRef = trigger.get("ref", None)
         
-        # if not self._second :
-        #     self._logger.debug('--------------::::: It\'s in if ')
-        #     topic = trigger["parameters"].get("topicName", None)
-        #     self._client.subscribe(topic)
-        #     self._second = True
-        # elif self._second:
-        #     self._logger.debug('-------------->>>>>>>>>>>>> It\'s in else ')
-        #     topic = trigger["parameters"].get("topicName", None)
-        #     # del self._topicTriggers[topic]
-        #     self._client.unsubscribe(topic)
-            
-        # self._deviceIdentity = trigger["parameters"].get("deviceId", None)
-
-        # if self._deviceIdentity:
-        #     if self._deviceIdentity in self._deviceId:
-        #         pass
-        #     else:
-        #         try:
-        #             last_deviceID = list(self._deviceId.keys())[list(self._deviceId.values()).index(topic)]
-        #             del self._deviceId[last_deviceID]
-        #             self._deviceId[self._deviceIdentity] = topic
-        #         except:
-        #             self._deviceId[self._deviceIdentity] = topic
+        if not self._second:
+            self._newTopic = trigger["parameters"].get("topicName", None)
+            self._second = True
+        elif self._second:
+            self._oldTopic = trigger["parameters"].get("topicName", None)
 
     def remove_trigger(self, trigger):
-        triggerRef = trigger.get("ref", None)
-        topic = trigger["parameters"].get("topicName", None)
 
-        del self._topicTriggers[topic]
+        if not self._second:
+            triggerRef = trigger.get("ref", None)
+            topic = trigger["parameters"].get("topicName", None)
 
-        if self.isMqttConnected:
-            self._client.unsubscribe(topic)
-        pass
+            del self._topicTriggers[topic]
+
+            if self.isMqttConnected:
+                self._client.unsubscribe(topic)
+
+        elif self._second:
+            self._second = False
+            if self._newTopic == self._oldTopic:
+                pass
+            else:
+                triggerRef = trigger.get("ref", None)
+                topic = trigger["parameters"].get("topicName", None)
+
+                del self._topicTriggers[topic]
+
+                if self.isMqttConnected:
+                    self._client.unsubscribe(topic)
+
 
     def _on_connect(self, client, userdata, flags, rc):
         self._logger.debug('[TattvaSensor]: Connected with code {}' + str(rc))
