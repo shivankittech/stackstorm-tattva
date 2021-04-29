@@ -98,13 +98,30 @@ class TattvaSensor(Sensor):
 
     def update_trigger(self, trigger):
         self._logger.debug('[TattvaSensor]: Trigger Details {}' + str(trigger))
-#         triggerRef = trigger.get("ref", None)
-#         topic = trigger["parameters"].get("topicName", None)
-#         self._topicTriggers[topic] = triggerRef
+        triggerRef = trigger.get("ref", None)
+        topic = trigger["parameters"].get("topicName", None)
+        if topic:
+            if topic in self._topicTriggers:
+                self._client.subscribe(topic)
+            else:
+                last_topic = list(self._topicTriggers.keys())[list(self._topicTriggers.values()).index(triggerRef)]
+                del self._topicTriggers[last_topic]
+                self._client.unsubscribe(last_topic)
+                self._topicTriggers[topic] = triggerRef
+                self._client.subscribe(topic)
+            
+        self._deviceIdentity = trigger["parameters"].get("deviceId", None)
 
-#         if self.isMqttConnected:
-#             self._client.subscribe(topic)
-        
+        if self._deviceIdentity:
+            if self._deviceIdentity in self._deviceId:
+                pass
+            else:
+                try:
+                    last_deviceID = list(self._deviceId.keys())[list(self._deviceId.values()).index(topic)]
+                    del self._deviceId[last_deviceID]
+                    self._deviceId[self._deviceIdentity] = topic
+                except:
+                    self._deviceId[self._deviceIdentity] = topic
 
     def remove_trigger(self, trigger):
         triggerRef = trigger.get("ref", None)
