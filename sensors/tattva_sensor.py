@@ -101,9 +101,10 @@ class TattvaSensor(Sensor):
         triggerRef = trigger.get("ref", None)
         topic = trigger["parameters"].get("topicName", None)
         if topic:
+            self._logger.debug('--------------::::: the topic is' + topic)
             if topic in self._topicTriggers:
                 self._client.subscribe(topic)
-                self._logger.debug('--------------::::: It\'s in if ')
+                self._logger.debug('--------------::::: It\'s in if agian')
             else:
                 self._logger.debug('-------------->>>>>>>>>>>>> It\'s in else ')
                 last_topic = list(self._topicTriggers.keys())[list(self._topicTriggers.values()).index(triggerRef)]
