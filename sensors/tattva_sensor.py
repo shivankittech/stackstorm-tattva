@@ -106,7 +106,7 @@ class TattvaSensor(Sensor):
             self._logger.debug('--------------::::: It\'s in if ')
             topic = trigger["parameters"].get("topicName", None)
             self._client.subscribe(topic)
-            self._count = True
+            self._second = True
         elif self._second:
             self._logger.debug('-------------->>>>>>>>>>>>> It\'s in else ')
             topic = trigger["parameters"].get("topicName", None)
