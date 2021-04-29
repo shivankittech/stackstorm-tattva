@@ -99,6 +99,9 @@ class TattvaSensor(Sensor):
         if self.isMqttConnected:
             self._client.subscribe(topic)
 
+        self._newTopic = None
+        self._oldTopic = None
+
     def update_trigger(self, trigger):
         
         if not self._second:
@@ -109,27 +112,44 @@ class TattvaSensor(Sensor):
 
     def remove_trigger(self, trigger):
 
-        if not self._second:
-            triggerRef = trigger.get("ref", None)
-            topic = trigger["parameters"].get("topicName", None)
+        triggerRef = trigger.get("ref", None)
+        topic = trigger["parameters"].get("topicName", None)
 
-            del self._topicTriggers[topic]
+        del self._topicTriggers[topic]
 
-            if self.isMqttConnected:
-                self._client.unsubscribe(topic)
-
-        elif self._second:
+        if self.isMqttConnected:
+            self._client.unsubscribe(topic)
+        
+        if self._second:
             self._second = False
             if self._newTopic == self._oldTopic:
-                pass
-            else:
-                triggerRef = trigger.get("ref", None)
-                topic = trigger["parameters"].get("topicName", None)
+                self._client.subscribe(topic)
 
-                del self._topicTriggers[topic]
 
-                if self.isMqttConnected:
-                    self._client.unsubscribe(topic)
+        # if not self._second:
+        #     triggerRef = trigger.get("ref", None)
+        #     topic = trigger["parameters"].get("topicName", None)
+
+        #     del self._topicTriggers[topic]
+
+        #     if self.isMqttConnected:
+        #         self._client.unsubscribe(topic)
+
+        # elif self._second:
+        #     self._second = False
+        #     if self._newTopic == self._oldTopic:
+                
+        #         pass
+        #     else:
+        #         self._newTopic = None
+        #         self._oldTopic = None
+        #         triggerRef = trigger.get("ref", None)
+        #         topic = trigger["parameters"].get("topicName", None)
+
+        #         del self._topicTriggers[topic]
+
+        #         if self.isMqttConnected:
+        #             self._client.unsubscribe(topic)
 
 
     def _on_connect(self, client, userdata, flags, rc):
