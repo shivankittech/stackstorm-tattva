@@ -113,22 +113,28 @@ class TattvaSensor(Sensor):
             self._oldTopic = trigger["parameters"].get("topicName", None)
 
     def remove_trigger(self, trigger):
-
-        triggerRef = trigger.get("ref", None)
-        topic = trigger["parameters"].get("topicName", None)
-
-        del self._topicTriggers[topic]
-
-        if self.isMqttConnected:
-            self._client.unsubscribe(topic)
         
         if self._second:
             self._second = False
-            self._logger.debug('-----------------------: False Remove ---------- Connected with ')
             if self._newTopic == self._oldTopic:
-                self._logger.debug('-----------------------: same subscribe ---------- Connected with ')
                 self._client.subscribe(topic)
+            else:
+                triggerRef = trigger.get("ref", None)
+                topic = trigger["parameters"].get("topicName", None)
 
+                del self._topicTriggers[topic]
+
+                if self.isMqttConnected:
+                    self._client.unsubscribe(topic)    
+        
+        elif not self._second:
+            triggerRef = trigger.get("ref", None)
+            topic = trigger["parameters"].get("topicName", None)
+
+            del self._topicTriggers[topic]
+
+            if self.isMqttConnected:
+                self._client.unsubscribe(topic)
 
         # if not self._second:
         #     triggerRef = trigger.get("ref", None)
