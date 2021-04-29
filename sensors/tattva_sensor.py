@@ -24,7 +24,8 @@ class TattvaSensor(Sensor):
         self._deviceIdentity = None
         self._topicTriggers = {}
         self.isMqttConnected = False
-        
+        self._count = 0
+
         self._logger = self._sensor_service.get_logger(__name__)
 
         self._client = None
@@ -83,6 +84,7 @@ class TattvaSensor(Sensor):
         self._client.disconnect()
 
     def add_trigger(self, trigger):
+        self._count = 0
         
         triggerRef = trigger.get("ref", None)
         topic = trigger["parameters"].get("topicName", None)
@@ -99,19 +101,17 @@ class TattvaSensor(Sensor):
     def update_trigger(self, trigger):
         self._logger.debug('[TattvaSensor]: Trigger Details {}' + str(trigger))
         triggerRef = trigger.get("ref", None)
-        topic = trigger["parameters"].get("topicName", None)
-        if topic:
-            self._logger.debug('--------------::::: the topic is' + topic)
-            if topic in self._topicTriggers:
-                self._client.subscribe(topic)
-                self._logger.debug('--------------::::: It\'s in if agian')
-            else:
-                self._logger.debug('-------------->>>>>>>>>>>>> It\'s in else ')
-                last_topic = list(self._topicTriggers.keys())[list(self._topicTriggers.values()).index(triggerRef)]
-                del self._topicTriggers[last_topic]
-                self._client.unsubscribe(last_topic)
-                self._topicTriggers[topic] = triggerRef
-                self._client.subscribe(topic)
+        
+        if self._count == 0:
+            self._logger.debug('--------------::::: It\'s in if ')
+            topic = trigger["parameters"].get("topicName", None)
+            self._client.subscribe(topic)
+            self._count + 1
+        elif self._count == 1:
+            self._logger.debug('-------------->>>>>>>>>>>>> It\'s in else ')
+            topic = trigger["parameters"].get("topicName", None)
+            del self._topicTriggers[topic]
+            self._client.unsubscribe(topic)
             
         self._deviceIdentity = trigger["parameters"].get("deviceId", None)
 
