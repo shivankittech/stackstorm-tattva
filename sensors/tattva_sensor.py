@@ -104,7 +104,7 @@ class TattvaSensor(Sensor):
 
 #         if self.isMqttConnected:
 #             self._client.subscribe(topic)
-        pass
+        
 
     def remove_trigger(self, trigger):
         triggerRef = trigger.get("ref", None)
