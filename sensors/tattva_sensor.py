@@ -106,8 +106,10 @@ class TattvaSensor(Sensor):
         
         if not self._second:
             self._newTopic = trigger["parameters"].get("topicName", None)
+            self._logger.debug('-----------------------: False ---------- Connected with ' + topic)
             self._second = True
         elif self._second:
+            self._logger.debug('-----------------------: True ---------- Connected with ' + topic)
             self._oldTopic = trigger["parameters"].get("topicName", None)
 
     def remove_trigger(self, trigger):
@@ -122,7 +124,9 @@ class TattvaSensor(Sensor):
         
         if self._second:
             self._second = False
+            self._logger.debug('-----------------------: False Remove ---------- Connected with ' + topic)
             if self._newTopic == self._oldTopic:
+                self._logger.debug('-----------------------: same subscribe ---------- Connected with ' + topic)
                 self._client.subscribe(topic)
 
 
