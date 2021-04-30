@@ -126,10 +126,12 @@ class TattvaSensor(Sensor):
         if self._second:
             self._second = False
             if self._newTopic == self._oldTopic:
-                self._client.subscribe(topic)
+                self._logger.debug('------------------::: new topic same as old topic')
+                # self._client.subscribe(topic)
                 if self._newDeviceId != self._oldDeviceId:
                     del self._deviceId[deviceId]    
             else:
+                self._logger.debug('------------------::: new topic different from old topic')
                 triggerRef = trigger.get("ref", None)
                 topic = trigger["parameters"].get("topicName", None)
 
