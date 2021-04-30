@@ -27,6 +27,8 @@ class TattvaSensor(Sensor):
         self._second = False
         self._newTopic = None
         self._oldTopic = None
+        self._newDeviceId = None
+        self._oldDeviceId = None
 
         self._logger = self._sensor_service.get_logger(__name__)
 
@@ -101,30 +103,39 @@ class TattvaSensor(Sensor):
 
         self._newTopic = None
         self._oldTopic = None
+        self._newDeviceId = None
+        self._oldDeviceId = None
         self._second = False
+        
 
     def update_trigger(self, trigger):
         
         if not self._second:
             self._newTopic = trigger["parameters"].get("topicName", None)
-            self._logger.debug('-----------------------: False ---------- Connected with ')
+            self._newDeviceId = trigger["parameters"].get("deviceId", None)
             self._second = True
         elif self._second:
-            self._logger.debug('-----------------------: True ---------- Connected with ')
             self._oldTopic = trigger["parameters"].get("topicName", None)
+            self._oldDeviceId = trigger["parameters"].get("deviceId", None)
 
     def remove_trigger(self, trigger):
         
         topic = trigger["parameters"].get("topicName", None)
+        deviceId = trigger["parameters"].get("deviceId", None)
+
         if self._second:
             self._second = False
             if self._newTopic == self._oldTopic:
                 self._client.subscribe(topic)
+                if self._newDeviceId != self._oldDeviceId:
+                    del self._deviceId[deviceId]    
             else:
                 triggerRef = trigger.get("ref", None)
                 topic = trigger["parameters"].get("topicName", None)
 
                 del self._topicTriggers[topic]
+                if self._newDeviceId != self._oldDeviceId:
+                    del self._deviceId[deviceId]
 
                 if self.isMqttConnected:
                     self._client.unsubscribe(topic)    
@@ -134,34 +145,10 @@ class TattvaSensor(Sensor):
             topic = trigger["parameters"].get("topicName", None)
 
             del self._topicTriggers[topic]
+            del self._deviceId[deviceId]
 
             if self.isMqttConnected:
                 self._client.unsubscribe(topic)
-
-        # if not self._second:
-        #     triggerRef = trigger.get("ref", None)
-        #     topic = trigger["parameters"].get("topicName", None)
-
-        #     del self._topicTriggers[topic]
-
-        #     if self.isMqttConnected:
-        #         self._client.unsubscribe(topic)
-
-        # elif self._second:
-        #     self._second = False
-        #     if self._newTopic == self._oldTopic:
-                
-        #         pass
-        #     else:
-        #         self._newTopic = None
-        #         self._oldTopic = None
-        #         triggerRef = trigger.get("ref", None)
-        #         topic = trigger["parameters"].get("topicName", None)
-
-        #         del self._topicTriggers[topic]
-
-        #         if self.isMqttConnected:
-        #             self._client.unsubscribe(topic)
 
 
     def _on_connect(self, client, userdata, flags, rc):
@@ -181,17 +168,18 @@ class TattvaSensor(Sensor):
         if self._deviceIdentity:
             if deviceId:
                 for deviceIdentity in self._deviceId:
-                    if deviceIdentity == messageDict["deviceId"]:
-                        payload = {
-                            'userdata': userdata,
-                            'topic': msg.topic,
-                            'message': str(message),
-                            'retain': msg.retain,
-                            'qos': msg.qos
-                        }
-                        self._sensor_service.dispatch(trigger=self._topicTriggers[msg.topic], payload=payload)
-                    else:
-                        self._logger.debug('[TattvaSensor]: device id by mqtt and parameter are not equal')
+                    if self._deviceId[deviceIdentity] == msg.topic:
+                        if deviceIdentity == messageDict["deviceId"]:
+                            payload = {
+                                'userdata': userdata,
+                                'topic': msg.topic,
+                                'message': str(message),
+                                'retain': msg.retain,
+                                'qos': msg.qos
+                            }
+                            self._sensor_service.dispatch(trigger=self._topicTriggers[msg.topic], payload=payload)
+                        else:
+                            self._logger.debug('[TattvaSensor]: device id by mqtt and parameter are not equal')
             else:
                 pass
         else:
