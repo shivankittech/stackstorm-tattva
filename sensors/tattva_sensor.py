@@ -101,6 +101,7 @@ class TattvaSensor(Sensor):
 
         self._newTopic = None
         self._oldTopic = None
+        self._second = False
 
     def update_trigger(self, trigger):
         
@@ -114,6 +115,7 @@ class TattvaSensor(Sensor):
 
     def remove_trigger(self, trigger):
         
+        topic = trigger["parameters"].get("topicName", None)
         if self._second:
             self._second = False
             if self._newTopic == self._oldTopic:
